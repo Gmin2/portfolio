@@ -9,6 +9,7 @@ import {
   type MotionNodeAnimationOptions,
   type Transition,
 } from "motion/react";
+import { useState } from "react";
 
 const LAYOUT_SPRING = {
   type: "spring",
@@ -40,6 +41,8 @@ const SOCIAL_ICONS: Record<string, React.ReactNode> = {
 };
 
 export default function App() {
+  const [showResume, setShowResume] = useState(false);
+
   return (
     <main className="flex h-full w-full overflow-hidden">
       <motion.div className="flex flex-1 bg-surface">
@@ -110,6 +113,25 @@ export default function App() {
                 >
                   blog
                 </motion.a>
+
+                <motion.span
+                  className="text-faint text-xs"
+                  initial={FADE_UP.initial}
+                  animate={FADE_UP.animate}
+                  transition={{ ...FADE_UP.transition, delay: 0.75 }}
+                >
+                  /
+                </motion.span>
+
+                <motion.button
+                  onClick={() => setShowResume(true)}
+                  className="text-faint hover:text-body text-sm transition-colors cursor-pointer"
+                  initial={FADE_UP.initial}
+                  animate={FADE_UP.animate}
+                  transition={{ ...FADE_UP.transition, delay: 0.8 }}
+                >
+                  resume
+                </motion.button>
               </div>
 
               <Home />
@@ -149,6 +171,53 @@ export default function App() {
           </LayoutGroup>
         </div>
       </motion.div>
+      {showResume ? (
+        <motion.div
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          onClick={() => setShowResume(false)}
+        >
+          <div
+            className="absolute inset-4 sm:inset-8 flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-2">
+              <a
+                href="/resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/60 hover:text-white text-sm transition-colors"
+              >
+                open in new tab
+              </a>
+              <button
+                onClick={() => setShowResume(false)}
+                className="text-white/60 hover:text-white text-sm transition-colors cursor-pointer"
+              >
+                close
+              </button>
+            </div>
+            <object
+              data="/resume.pdf"
+              type="application/pdf"
+              className="w-full flex-1 rounded-lg"
+            >
+              <div className="flex flex-col items-center justify-center h-full gap-2 bg-surface-alt rounded-lg">
+                <p className="text-muted text-sm">Unable to display PDF</p>
+                <a
+                  href="/resume.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-faint hover:text-body text-sm transition-colors underline"
+                >
+                  Download resume
+                </a>
+              </div>
+            </object>
+          </div>
+        </motion.div>
+      ) : null}
     </main>
   );
 }
