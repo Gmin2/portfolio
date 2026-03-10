@@ -145,60 +145,173 @@ export default function Home() {
   const clearWorkHover = useCallback(() => setHoveredWork(null), []);
   const clearProjectHover = useCallback(() => setHoveredProject(null), []);
 
+  // Derive fill from hover state
+  const hoveredWorkIdx = hoveredWork
+    ? WORK_ITEMS.findIndex((w) => w.company === hoveredWork.id)
+    : -1;
+  const hoveredProjectIdx = hoveredProject
+    ? PROJECTS.findIndex((p) => p.name === hoveredProject.id)
+    : -1;
+
+  // When hovering a project item, work line is fully filled
+  const workFill =
+    hoveredProjectIdx >= 0
+      ? 1
+      : hoveredWorkIdx >= 0
+        ? (hoveredWorkIdx + 1) / WORK_ITEMS.length
+        : 0;
+  const projectFill =
+    hoveredProjectIdx >= 0
+      ? (hoveredProjectIdx + 1) / PROJECTS.length
+      : 0;
+
+  const workOutCurveFilled = workFill > 0;
+  const incomingCurveFilled = workFill >= 1;
+  const projectDotFilled = incomingCurveFilled;
+  const projectOutCurveFilled = projectFill > 0;
+
   return (
     <>
-      <AnimatedText
-        className="text-xl mt-4 font-bold"
-        element="h2"
-        text="work"
-        artificialDelay={0.3}
-      />
-
-      <div className="flex flex-col gap-3 mt-3" onMouseLeave={clearWorkHover}>
-        {WORK_ITEMS.map((item, i) => (
-          <ItemRow
-            key={item.slug}
-            id={item.company}
-            label={item.company}
-            role={item.role}
-            about={item.about}
-            date={item.date}
-            url={item.url}
-            isHovered={hoveredWork?.id === item.company}
-            layoutId="work-hover"
-            delay={0.5 + i * 0.15}
-            previewUrl={WORK_PREVIEW_URLS.get(item.slug) ?? ""}
-            onHover={handleWorkHover}
+      {/* ── Work Section ── */}
+      <div className="relative mt-6">
+        {/* Section header: dot + title */}
+        <div className="relative flex items-center h-6">
+          <div className="absolute left-[-28px] top-[8px] w-2 h-2 rounded-full bg-accent ring-4 ring-surface z-10" />
+          <AnimatedText
+            className="text-xl font-bold"
+            element="h2"
+            text="work"
+            artificialDelay={0.3}
           />
-        ))}
+        </div>
+
+        {/* Outgoing curve: header dot → items line */}
+        <svg
+          className={`absolute left-[-24.5px] top-[12px] w-[14px] h-[16px] transition-colors duration-300 ${workOutCurveFilled ? "text-accent" : "text-line"}`}
+          fill="none"
+          stroke="currentColor"
+        >
+          <path d="M 0.5 0 C 0.5 8, 13 8, 13 16" strokeWidth="1" />
+        </svg>
+
+        {/* Items with vertical line */}
+        <div className="relative pt-2 pb-4">
+          {/* Background line */}
+          <div className="absolute left-[-12px] top-[4px] bottom-[12px] w-px bg-line" />
+          {/* Accent fill line */}
+          <div
+            className="absolute left-[-12px] top-[4px] bottom-[12px] w-px bg-accent origin-top transition-transform duration-300"
+            style={{ transform: `scaleY(${workFill})` }}
+          />
+          <div
+            className="flex flex-col gap-3"
+            onMouseLeave={clearWorkHover}
+          >
+            {WORK_ITEMS.map((item, i) => {
+              const filled =
+                workFill > (i + 0.3) / WORK_ITEMS.length;
+              return (
+                <div
+                  key={item.slug}
+                  className="relative group/tl"
+                >
+                  <div
+                    className={`absolute left-[-14px] top-[10px] w-[5px] h-[5px] rounded-full z-10 transition-colors duration-200 ${filled ? "bg-accent" : "bg-line group-hover/tl:bg-dot"}`}
+                  />
+                  <ItemRow
+                    id={item.company}
+                    label={item.company}
+                    role={item.role}
+                    about={item.about}
+                    date={item.date}
+                    url={item.url}
+                    isHovered={hoveredWork?.id === item.company}
+                    layoutId="work-hover"
+                    delay={0.5 + i * 0.15}
+                    previewUrl={WORK_PREVIEW_URLS.get(item.slug) ?? ""}
+                    onHover={handleWorkHover}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
-      <AnimatedText
-        className="text-xl mt-4 font-bold"
-        element="h2"
-        text="projects"
-        artificialDelay={0.3}
-      />
+      {/* ── Projects Section ── */}
+      <div className="relative">
+        {/* Incoming curve: work items line → projects header dot */}
+        <svg
+          className={`absolute left-[-24.5px] top-[-12px] w-[14px] h-[24px] transition-colors duration-300 ${incomingCurveFilled ? "text-accent" : "text-line"}`}
+          fill="none"
+          stroke="currentColor"
+        >
+          <path d="M 13 0 C 13 12, 0.5 12, 0.5 24" strokeWidth="1" />
+        </svg>
 
-      <div
-        className="flex flex-col gap-3 mt-3"
-        onMouseLeave={clearProjectHover}
-      >
-        {PROJECTS.map((project, i) => (
-          <ItemRow
-            key={project.slug}
-            id={project.name}
-            label={project.name}
-            role={project.role}
-            about={project.about}
-            url={project.url}
-            isHovered={hoveredProject?.id === project.name}
-            layoutId="project-hover"
-            delay={0.5 + i * 0.15}
-            previewUrl={PROJECT_PREVIEW_URLS.get(project.slug) ?? ""}
-            onHover={handleProjectHover}
+        {/* Section header: dot + title */}
+        <div className="relative flex items-center h-6">
+          <div
+            className={`absolute left-[-28px] top-[8px] w-2 h-2 rounded-full ring-4 ring-surface z-10 transition-colors duration-300 ${projectDotFilled ? "bg-accent" : "bg-dot"}`}
           />
-        ))}
+          <AnimatedText
+            className="text-xl font-bold"
+            element="h2"
+            text="projects"
+            artificialDelay={0.3}
+          />
+        </div>
+
+        {/* Outgoing curve: header dot → items line */}
+        <svg
+          className={`absolute left-[-24.5px] top-[12px] w-[14px] h-[16px] transition-colors duration-300 ${projectOutCurveFilled ? "text-accent" : "text-line"}`}
+          fill="none"
+          stroke="currentColor"
+        >
+          <path d="M 0.5 0 C 0.5 8, 13 8, 13 16" strokeWidth="1" />
+        </svg>
+
+        {/* Items with vertical line */}
+        <div className="relative pt-2 pb-4">
+          {/* Background line */}
+          <div className="absolute left-[-12px] top-[4px] bottom-[24px] w-px bg-line" />
+          {/* Accent fill line */}
+          <div
+            className="absolute left-[-12px] top-[4px] bottom-[24px] w-px bg-accent origin-top transition-transform duration-300"
+            style={{ transform: `scaleY(${projectFill})` }}
+          />
+          <div
+            className="flex flex-col gap-3"
+            onMouseLeave={clearProjectHover}
+          >
+            {PROJECTS.map((project, i) => {
+              const filled =
+                projectFill > (i + 0.3) / PROJECTS.length;
+              return (
+                <div
+                  key={project.slug}
+                  className="relative group/tl"
+                >
+                  <div
+                    className={`absolute left-[-14px] top-[10px] w-[5px] h-[5px] rounded-full z-10 transition-colors duration-200 ${filled ? "bg-accent" : "bg-line group-hover/tl:bg-dot"}`}
+                  />
+                  <ItemRow
+                    id={project.name}
+                    label={project.name}
+                    role={project.role}
+                    about={project.about}
+                    url={project.url}
+                    isHovered={hoveredProject?.id === project.name}
+                    layoutId="project-hover"
+                    delay={0.5 + i * 0.15}
+                    previewUrl={PROJECT_PREVIEW_URLS.get(project.slug) ?? ""}
+                    onHover={handleProjectHover}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       <div className="hidden md:block">

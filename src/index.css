@@ -21,6 +21,10 @@
 
   /* Accent */
   --color-accent: var(--color-green-500);
+
+  /* Timeline */
+  --color-line: var(--color-stone-300);
+  --color-dot: var(--color-stone-400);
 }
 
 /* ─── Redaction font family ─── */
