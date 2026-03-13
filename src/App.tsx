@@ -198,23 +198,11 @@ export default function App() {
                 close
               </button>
             </div>
-            <object
-              data="/resume.pdf"
-              type="application/pdf"
-              className="w-full flex-1 rounded-lg"
-            >
-              <div className="flex flex-col items-center justify-center h-full gap-2 bg-surface-alt rounded-lg">
-                <p className="text-muted text-sm">Unable to display PDF</p>
-                <a
-                  href="/resume.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-faint hover:text-body text-sm transition-colors underline"
-                >
-                  Download resume
-                </a>
-              </div>
-            </object>
+            <iframe
+              src="/resume.pdf"
+              title="Resume"
+              className="w-full flex-1 rounded-lg bg-surface-alt"
+            />
           </div>
         </motion.div>
       ) : null}

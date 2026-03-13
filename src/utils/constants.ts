@@ -52,7 +52,7 @@ export const WORK_ITEMS: readonly WorkItem[] = [
     slug: "summer-of-bitcoin",
     role: "rust & lightning engineer",
     date: "july 2025 — sept 2025",
-    about: "architectural changes in AsyncAPI Generator, maintainer of @asyncapi/generator (40k weekly downloads)",
+    about: "implemented LND-compatible GRPC API crate for lampo.rs lightning node and refactored integration tests with async/await",
     url: "https://www.summerofbitcoin.org",
   },
   {
@@ -68,7 +68,7 @@ export const WORK_ITEMS: readonly WorkItem[] = [
     slug: "stellar",
     role: "typescript engineer",
     date: "feb 2025 — may 2025",
-    about: "AsyncAPI Generator architectural changes, build optimization, and monorepo structure",
+    about: "OnlyDust-backed fellowship contributing Soroban smart-contract examples/libraries and fixes across Stellar open-source ecosystem",
     url: "https://stellar.org",
   },
   {
